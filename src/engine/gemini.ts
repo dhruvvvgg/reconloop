@@ -54,7 +54,7 @@ export async function resolveResidualAmbiguityWithGemini(
       apiKey: apiKey,
       httpOptions: {
         headers: {
-          'User-Agent': 'aistudio-build',
+          'User-Agent': 'reconloop-engine',
         },
       },
     });
