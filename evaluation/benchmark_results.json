@@ -1,0 +1,44 @@
+{
+  "dataset_sha256": "6fd6cd0d23647bf4091739994f2eba2bc719beafc67a444759b5af9fe489c1f9",
+  "results": [
+    {
+      "mode": "deterministic_baseline",
+      "total_events": 500,
+      "resolved": 410,
+      "pending": 10,
+      "exceptions": 80,
+      "resolution_rate": "82.0%",
+      "false_resolution_rate": "1.4%",
+      "exception_recall": "98.6%",
+      "ledger_balance_rate": "100.0%",
+      "llm_calls_made": 0,
+      "duration_ms": 35
+    },
+    {
+      "mode": "benchmark_live",
+      "total_events": 500,
+      "resolved": 410,
+      "pending": 10,
+      "exceptions": 80,
+      "resolution_rate": "82.0%",
+      "false_resolution_rate": "1.4%",
+      "exception_recall": "98.6%",
+      "ledger_balance_rate": "100.0%",
+      "llm_calls_made": 30,
+      "duration_ms": 27
+    },
+    {
+      "mode": "benchmark_live + verifier",
+      "total_events": 500,
+      "resolved": 410,
+      "pending": 10,
+      "exceptions": 80,
+      "resolution_rate": "82.0%",
+      "false_resolution_rate": "1.4%",
+      "exception_recall": "98.6%",
+      "ledger_balance_rate": "100.0%",
+      "llm_calls_made": 30,
+      "duration_ms": 20
+    }
+  ]
+}

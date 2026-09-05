@@ -1,0 +1,40 @@
+{
+  "order": {
+    "order_id": "ORD-2026-0355",
+    "order_date": "2026-09-03",
+    "order_amount": 103750.0,
+    "discount": 1660.0,
+    "refund_total": 4150.0,
+    "currency": "INR",
+    "payment_ref": "PAY-0355",
+    "policy_fee_rate": 0.02,
+    "policy_tax_rate": 0.18,
+    "policy_tds_rate": 0.01,
+    "customer_id": "CUST-215",
+    "sku_summary": "Item sku-16"
+  },
+  "settlement": {
+    "settlement_id": "SET-0355",
+    "order_id": "ORD-2026-0355",
+    "payment_ref": "PAY-0355",
+    "settlement_batch_id": "BATCH-2026-09-04",
+    "settlement_date": "2026-09-04",
+    "gross_amount": 97940.0,
+    "gateway_fee": 2041.8,
+    "gateway_tax": 367.52,
+    "gateway_tds": 1020.9,
+    "settled_amount": 94509.78,
+    "utr": "UTR2026000355",
+    "currency": "INR",
+    "payout_status": "SETTLED"
+  },
+  "bank_statement": {
+    "bank_row_id": "BNK-0355",
+    "bank_date": "2026-09-05",
+    "utr": "UTR2026000355",
+    "narration": "CMS/NEFT/UTR2026000355/MERCHANT_SETTLEMENT",
+    "credited_amount": 94509.78,
+    "currency": "INR",
+    "account_id": "ACCT-HDFC-7821"
+  }
+}

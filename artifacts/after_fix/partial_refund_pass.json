@@ -1,0 +1,83 @@
+{
+  "event_id": "EV-ORD-2026-0355",
+  "order_id": "ORD-2026-0355",
+  "status": "RESOLVED",
+  "discrepancy_class": "PARTIAL_REFUND",
+  "order_amount": 103750.0,
+  "discount": 1660.0,
+  "refund_total": 4150.0,
+  "policy_fee": 2041.8,
+  "policy_tax": 367.52,
+  "policy_tds": 1020.9,
+  "policy_expected_net": 94509.78,
+  "gateway_reported_net": 94509.78,
+  "bank_received_net": 94509.78,
+  "policy_vs_gateway_variance": 0.0,
+  "gateway_vs_bank_variance": 0.0,
+  "policy_vs_bank_variance": 0.0,
+  "settlement_variance": 0.0,
+  "bank_variance": 0.0,
+  "confidence_score": 1.0,
+  "resolution_rationale": "Partial refund of ₹4150.00 deducted exactly once and verified across feeds.",
+  "linked_settlement_ids": [
+    "SET-0355"
+  ],
+  "linked_bank_row_ids": [
+    "BNK-0355"
+  ],
+  "verifications": [
+    {
+      "id": "EVIDENCE_EXISTS",
+      "name": "Source Evidence Links",
+      "passed": true,
+      "message": "Linked 1 settlement(s) and 1 bank row(s)"
+    },
+    {
+      "id": "INJECTION_DEFENSE",
+      "name": "Instruction-Like Data Defense",
+      "passed": true,
+      "message": "Narration verified: No directive or override patterns found"
+    },
+    {
+      "id": "NO_DOUBLE_ASSIGNMENT",
+      "name": "Single Ownership Conservation",
+      "passed": true,
+      "message": "All linked evidence is exclusively owned by this economic event"
+    },
+    {
+      "id": "NO_DUPLICATE_CREDIT",
+      "name": "Duplicate Credit Check",
+      "passed": true,
+      "message": "No duplicate credit advice on bank statement"
+    },
+    {
+      "id": "SETTLEMENT_ARITHMETIC",
+      "name": "Settlement Feed Arithmetic",
+      "passed": true,
+      "message": "Settlement arithmetic verified"
+    },
+    {
+      "id": "TIMING_SLA",
+      "name": "Settlement Window Cutoff",
+      "passed": true,
+      "message": "Settlement date 2026-09-04 within allowed cutoff 2026-09-09"
+    },
+    {
+      "id": "LEDGER_CONSERVATION",
+      "name": "Ledger Net Conservation",
+      "passed": true,
+      "message": "Policy Net (₹94509.78) == Bank Received Net (₹94509.78)"
+    }
+  ],
+  "audit_trail": [
+    "[Order Ingestion] Order ORD-2026-0355 received: gross ₹103750.00, discount ₹1660.00, refund ₹4150.00",
+    "[Policy Calculation] Taxable: ₹102090.00, Fee (2%): ₹2041.80, Tax (18%): ₹367.52, TDS (1%): ₹1020.90 -> Expected Net: ₹94509.78",
+    "[Settlement Link] Settlement SET-0355 matched via exact UTR2026000355: Gross ₹97940.00 - Fees (₹2041.80+₹367.52+₹1020.90) = ₹94509.78 (Internal arithmetic verified)",
+    "[Bank Link] Bank row BNK-0355 matched via exact UTR2026000355: Credited ₹94509.78 on 2026-09-05",
+    "[Pairwise Variances] Policy-vs-Gateway: ₹0.00, Gateway-vs-Bank: ₹0.00, Policy-vs-Bank: ₹0.00",
+    "[DomainVerifier] All 7 predicates passed strictly",
+    "[Verified Commit] Event successfully transitioned to RESOLVED state (PARTIAL_REFUND)"
+  ],
+  "created_at": "2026-09-05T08:15:00.000Z",
+  "updated_at": "2026-09-05T08:15:00.000Z"
+}

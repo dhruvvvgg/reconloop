@@ -1,0 +1,68 @@
+{
+  "event_id": "EV-ORD-2026-0355",
+  "order_id": "ORD-2026-0355",
+  "status": "EXCEPTION",
+  "discrepancy_class": "SETTLEMENT_ARITHMETIC_MISMATCH",
+  "order_amount": 103750.0,
+  "discount": 1660.0,
+  "refund_total": 4150.0,
+  "policy_fee": 2041.8,
+  "policy_tax": 367.52,
+  "policy_tds": 1020.9,
+  "policy_expected_net": 94509.78,
+  "gateway_reported_net": 94509.78,
+  "bank_received_net": 94509.78,
+  "policy_vs_gateway_variance": 4150.0,
+  "gateway_vs_bank_variance": 0.0,
+  "policy_vs_bank_variance": 4150.0,
+  "settlement_variance": 4150.0,
+  "bank_variance": 0.0,
+  "resolution_rationale": "Gateway calculation error: Reported settled amount does not equal gross minus fee, tax, and TDS (refund deducted twice in legacy verifier check).",
+  "verifications": [
+    {
+      "id": "EVIDENCE_EXISTS",
+      "name": "Source Evidence Links",
+      "passed": true,
+      "message": "Linked 1 settlement(s) and 1 bank row(s)"
+    },
+    {
+      "id": "INJECTION_DEFENSE",
+      "name": "Instruction-Like Data Defense",
+      "passed": true,
+      "message": "Narration verified: No directive or override patterns found"
+    },
+    {
+      "id": "NO_DOUBLE_ASSIGNMENT",
+      "name": "Single Ownership Conservation",
+      "passed": true,
+      "message": "All linked evidence is exclusively owned by this economic event"
+    },
+    {
+      "id": "NO_DUPLICATE_CREDIT",
+      "name": "Duplicate Credit Check",
+      "passed": true,
+      "message": "No duplicate credit advice on bank statement"
+    },
+    {
+      "id": "SETTLEMENT_ARITHMETIC",
+      "name": "Settlement Feed Arithmetic",
+      "passed": false,
+      "message": "Settlement SET-0355 net calculation error: gross(97940) - refund(4150) - fees(2041.8 + 367.52 + 1020.9) = 90359.78 != reported 94509.78"
+    },
+    {
+      "id": "LEDGER_CONSERVATION",
+      "name": "Ledger Net Conservation",
+      "passed": false,
+      "message": "Policy Net (94509.78) differs from Legacy Recomputed Net (90359.78) by ₹4150.00"
+    }
+  ],
+  "audit_trail": [
+    "[Order Ingestion] Order ORD-2026-0355 received with ₹4150.00 partial refund",
+    "[Settlement Link] Settlement SET-0355 linked via UTR2026000355 (gross: ₹97940.00, net: ₹94509.78)",
+    "[Bank Link] Bank row BNK-0355 matched via exact UTR (₹94509.78)",
+    "[Legacy Verification Failure] Settlement arithmetic check re-deducted ₹4150.00 refund from gross (₹97940 - ₹4150 - fees = ₹90359.78)",
+    "[Exception Triggered] Discrepancy classified as SETTLEMENT_ARITHMETIC_MISMATCH (₹4150.00 artificial variance)"
+  ],
+  "created_at": "2026-09-05T07:15:00.000Z",
+  "updated_at": "2026-09-05T07:15:00.000Z"
+}

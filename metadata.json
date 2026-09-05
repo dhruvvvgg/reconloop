@@ -1,0 +1,6 @@
+{
+  "name": "ReconLoop",
+  "description": "Verification-first settlement reconciliation controller for merchants reconciling orders, settlements, and bank statement feeds.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
