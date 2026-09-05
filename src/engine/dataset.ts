@@ -27,6 +27,62 @@ export function addDays(dateStr: string, days: number): string {
 }
 
 /**
+ * Generates realistic non-repeating merchant transaction amounts.
+ * Follows an empirical distribution across small ticket UPI, mid-tier retail,
+ * and high-ticket wholesale/electronic orders with diverse paise amounts.
+ */
+export function generateRealisticAmount(i: number): number {
+  // Deterministic 32-bit hash mixer based on order index
+  let h1 = (i * 1597 + 51749) ^ 0x5bf03635;
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 0x85ebca6b);
+  h1 = Math.imul(h1 ^ (h1 >>> 13), 0xc2b2ae35);
+  h1 = (h1 ^ (h1 >>> 16)) >>> 0;
+  const rand1 = (h1 % 10000) / 10000;
+  
+  let h2 = (h1 + 1013904223) | 0;
+  h2 = Math.imul(h2 ^ (h2 >>> 15), 0x45d9f3b);
+  h2 = (h2 ^ (h2 >>> 16)) >>> 0;
+  const rand2 = (h2 % 10000) / 10000;
+
+  // Realistic Indian merchant ticket tiering:
+  // 35% low-ticket consumer UPI (₹1,250 - ₹9,980)
+  // 40% mid-tier retail/e-commerce (₹10,200 - ₹48,700)
+  // 25% high-ticket wholesale / electronics (₹51,000 - ₹1,85,000)
+  let rupees: number;
+  if (rand1 < 0.35) {
+    rupees = 1250 + Math.floor(rand2 * 8730);
+  } else if (rand1 < 0.75) {
+    rupees = 10200 + Math.floor(rand2 * 38500);
+  } else {
+    rupees = 51000 + Math.floor(rand2 * 134000);
+  }
+
+  // Ensure minimum ₹15,000 for refund test orders (351-360) so refundTotal (4150) is cleanly partial
+  if (i >= 351 && i <= 360 && rupees < 15000) {
+    rupees += 18000;
+  }
+
+  // Realistic paise distribution: mix of round rupees, 50p, 99p, 25p, 75p, and varied decimals
+  const paiseRand = (h1 ^ (h2 >>> 5)) % 100;
+  let paise = 0;
+  if (paiseRand < 40) {
+    paise = 0;
+  } else if (paiseRand < 55) {
+    paise = 50;
+  } else if (paiseRand < 68) {
+    paise = 99;
+  } else if (paiseRand < 78) {
+    paise = 25;
+  } else if (paiseRand < 86) {
+    paise = 75;
+  } else {
+    paise = (h1 % 90) + 10;
+  }
+
+  return round2(rupees + paise / 100);
+}
+
+/**
  * Generates the deterministic benchmark dataset.
  * Supports two distinct batch modes:
  * 1. 'realistic': Operationally representative distribution with 0 artificially injected ambiguity.
@@ -48,11 +104,10 @@ export function generateBenchmarkDataset(batchType: 'realistic' | 'stress' = 'st
     const dayOffset = Math.floor((i - 1) / 25);
     const orderDate = addDays(baseDate, dayOffset);
 
-    // Base gross amount between ₹10,000 and ₹2,00,000
-    const baseAmounts = [12450.00, 24858.50, 37350.00, 64740.00, 83000.00, 103750.00, 149400.00, 199200.00];
     const isSpecialAmount = isStress && (i === 465 || i === 466 || i === 498 || i === 499);
-    const orderAmount = isSpecialAmount ? (i === 498 ? 149400.00 : 103750.00) : baseAmounts[(i * 7) % baseAmounts.length];
-    const discount = isSpecialAmount ? 0.00 : ((i % 5 === 0) ? 1660.00 : 0.00);
+    const orderAmount = isSpecialAmount ? (i === 498 ? 149400.00 : 103750.00) : generateRealisticAmount(i);
+    const discountTiers = [150.00, 250.00, 399.00, 500.00, 750.00, 1200.00];
+    const discount = isSpecialAmount ? 0.00 : ((i % 5 === 0) ? discountTiers[i % discountTiers.length] : 0.00);
 
     // Standard policy parameters
     const policyFeeRate = 0.02; // 2%

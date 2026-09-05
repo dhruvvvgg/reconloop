@@ -1,53 +1,191 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
+
+/* ===================================================================
+   ReconLoop Dual Theme System
+   Inspired by "IRCTC, Reimagined" & Wise Editorial Fintech
+   =================================================================== */
+
+:root,
+[data-theme="light"] {
+  /* Canvas: Warm off-white / cream base */
+  --canvas: #FAF7F2;
+  --surface: #FFFFFF;
+  --surface-raised: #FFFFFF;
+  --surface-inset: #F4EFEA;
+
+  /* Borders: Warm neutral */
+  --border: #E8E3DA;
+  --border-strong: #D6CEBE;
+
+  /* Text: Deep warm stone */
+  --text-primary: #1C1917;
+  --text-secondary: #57534E;
+  --text-muted: #8C827A;
+
+  /* Accent: Razorpay Dodger Blue (used sparingly) */
+  --accent: #0D94FB;
+  --accent-hover: #0B7CE6;
+  --accent-subtle: rgba(13, 148, 251, 0.08);
+  --accent-text: #FFFFFF;
+
+  /* Semantic Status: Grounded, high-contrast, calm */
+  --positive: #15803D;
+  --positive-subtle: #F0FDF4;
+  --positive-text: #166534;
+
+  --warning: #B45309;
+  --warning-subtle: #FFFBEB;
+  --warning-text: #92400E;
+
+  --error: #B91C1C;
+  --error-subtle: #FEF2F2;
+  --error-text: #991B1B;
+
+  /* Code & Mono */
+  --code-bg: #F4EFEA;
+
+  /* Navbar */
+  --nav-bg: rgba(250, 247, 242, 0.92);
+  --nav-border: #E8E3DA;
+
+  /* Subtle Neutral Shadows (No colored glows) */
+  --shadow-sm: 0 1px 2px 0 rgba(28, 25, 23, 0.05);
+  --shadow-md: 0 4px 14px -2px rgba(28, 25, 23, 0.07), 0 2px 4px -2px rgba(28, 25, 23, 0.04);
+  --shadow-lg: 0 12px 28px -6px rgba(28, 25, 23, 0.09);
+}
+
+[data-theme="dark"] {
+  /* Canvas: TRUE NEUTRAL near-black charcoal / graphite (zero blue hue shift) */
+  --canvas: #0A0A0B;
+  --surface: #121214;
+  --surface-raised: #18181B;
+  --surface-inset: #0E0E10;
+
+  /* Borders: Barely-visible neutral border, roughly 1px solid rgba(255,255,255,0.07) */
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.13);
+
+  /* Text: Neutral zinc */
+  --text-primary: #F4F4F5;
+  --text-secondary: #A1A1AA;
+  --text-muted: #71717A;
+
+  /* Accent: Razorpay Dodger Blue (used sparingly) */
+  --accent: #0D94FB;
+  --accent-hover: #38BDF8;
+  --accent-subtle: rgba(13, 148, 251, 0.12);
+  --accent-text: #FFFFFF;
+
+  /* Semantic Status: DESATURATED in dark mode (muted sage, muted amber, muted red-clay) */
+  --positive: #52B788;
+  --positive-subtle: rgba(82, 183, 136, 0.12);
+  --positive-text: #74C69D;
+
+  --warning: #D4A373;
+  --warning-subtle: rgba(212, 163, 115, 0.12);
+  --warning-text: #E6CCB2;
+
+  --error: #D96B6B;
+  --error-subtle: rgba(217, 107, 107, 0.12);
+  --error-text: #E59898;
+
+  /* Code & Mono */
+  --code-bg: #141416;
+
+  /* Navbar */
+  --nav-bg: rgba(10, 10, 11, 0.92);
+  --nav-border: rgba(255, 255, 255, 0.07);
+
+  /* Subtle Neutral Shadows (No colored glows) */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 14px -2px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 12px 28px -6px rgba(0, 0, 0, 0.7);
+}
 
 @layer base {
   :root {
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    --font-serif: 'Newsreader', Georgia, serif;
+    --font-mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+  }
+
+  html {
+    color-scheme: light;
+  }
+
+  html[data-theme="dark"] {
+    color-scheme: dark;
   }
 
   body {
-    background-color: #09090b;
-    color: #fafafa;
+    background-color: var(--canvas);
+    color: var(--text-primary);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.012em;
+    overflow-x: hidden;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-sans);
+    letter-spacing: -0.028em;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  /* Editorial Italic Accent (IRCTC Reimagined tone) */
+  .italic-serif {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
     letter-spacing: -0.01em;
   }
 
-  /* Ensure all monetary numbers and code elements strictly use tabular numbers */
+  /* Tabular numbers for all financial values */
   .tabular-nums,
   .font-mono,
   table td,
   table th {
-    font-feature-settings: "tnum" 1, "zero" 1, "cv05" 1;
+    font-feature-settings: "tnum" 1, "zero" 1;
     font-variant-numeric: tabular-nums;
   }
 }
 
-/* Premium fintech card and surface depth styles */
-.fintech-surface {
-  background-color: #101014;
-  border-color: #22222a;
+/* ===================================================================
+   Surface Utilities — Clean, Restrained Cards
+   =================================================================== */
+
+.surface-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
-.fintech-surface-elevated {
-  background-color: #16161c;
-  border-color: #2c2c36;
+.surface-card-elevated {
+  background-color: var(--surface-raised);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
 }
 
-/* Custom scrollbar matching Sophisticated Dark aesthetic */
+.surface-inset {
+  background-color: var(--surface-inset);
+  border: 1px solid var(--border);
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #09090b;
+  background: var(--canvas);
 }
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: var(--border-strong);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: var(--text-muted);
 }

@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { 
   X, 
   FileSpreadsheet, 
   Copy, 
   Check, 
-  Layers
+  Layers,
+  Database
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface SourceFeedsModalProps {
   isOpen: boolean;
@@ -45,103 +47,140 @@ export const SourceFeedsModal: React.FC<SourceFeedsModalProps> = ({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const tabs = [
+    { id: 'orders' as const, label: 'orders.csv', count: feedsData.orders_count, desc: 'Order Ledger Baseline' },
+    { id: 'settlements' as const, label: 'settlements.csv', count: feedsData.settlements_count, desc: 'Gateway Batches' },
+    { id: 'bank' as const, label: 'bank_statement.csv', count: feedsData.bank_rows_count, desc: 'Bank Clearances' },
+  ];
+
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-[2px] flex items-center justify-center p-4">
-      <div className="bg-[#0e0e12] border border-[#24242e] rounded-2xl max-w-4xl w-full shadow-[0_20px_60px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col max-h-[90vh]">
-        
-        {/* Header */}
-        <div className="p-4 px-6 border-b border-[#22222a] bg-[#0a0a0d] flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-[#181822] border border-[#2a2a38] flex items-center justify-center text-zinc-200">
-              <FileSpreadsheet className="w-4 h-4" />
+    <AnimatePresence>
+      <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6">
+        {/* Backdrop */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+        />
+
+        {/* Modal Window */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 16 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 16 }}
+          transition={{ type: 'spring', damping: 26, stiffness: 320 }}
+          className="relative w-full max-w-4xl rounded-xl border shadow-2xl overflow-hidden flex flex-col max-h-[88vh] z-10"
+          style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}
+        >
+          {/* Header */}
+          <div 
+            className="p-4 px-6 border-b flex items-center justify-between"
+            style={{ backgroundColor: 'var(--surface-inset)', borderColor: 'var(--border)' }}
+          >
+            <div className="flex items-center space-x-3">
+              <div 
+                className="w-9 h-9 rounded-lg flex items-center justify-center border shadow-sm"
+                style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)', color: 'var(--accent)' }}
+              >
+                <FileSpreadsheet className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-sm font-semibold tracking-tight" style={{ color: 'var(--text-primary)' }}>
+                  Tri-Feed Raw Ingestion Artifacts
+                </h2>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                  Original immutable CSV feeds: orders, settlements, and bank statement
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-sm font-semibold text-white tracking-tight font-mono">
-                Source Feed Raw Ingestion Feeds
-              </h2>
-              <p className="text-xs text-zinc-400 font-mono text-[11px] mt-0.5">
-                3 Imperfect Source Feeds: orders.csv, settlements.csv, and bank_statement.csv
-              </p>
+
+            <button
+              id="btn-close-source-feeds"
+              onClick={onClose}
+              className="p-1.5 rounded-lg border transition-colors hover:opacity-80"
+              style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Tab Selection */}
+          <div 
+            className="px-6 py-2.5 border-b flex flex-wrap items-center justify-between gap-3 text-xs"
+            style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}
+          >
+            <div 
+              className="inline-flex rounded-full p-0.5 border"
+              style={{ backgroundColor: 'var(--surface-inset)', borderColor: 'var(--border)' }}
+            >
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className="px-3 py-1 rounded-full text-xs font-medium transition-colors"
+                  style={{
+                    backgroundColor: activeTab === tab.id ? 'var(--surface)' : 'transparent',
+                    color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-muted)',
+                    boxShadow: activeTab === tab.id ? 'var(--shadow-sm)' : 'none',
+                  }}
+                >
+                  {tab.label} <span className="font-mono text-[11px] opacity-70">({tab.count})</span>
+                </button>
+              ))}
             </div>
+
+            <motion.button
+              whileTap={{ scale: 0.96 }}
+              onClick={handleCopy}
+              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border transition-colors text-xs font-medium shadow-sm"
+              style={{ backgroundColor: 'var(--surface-inset)', borderColor: 'var(--border)', color: 'var(--text-primary)' }}
+            >
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" style={{ color: 'var(--text-muted)' }} />}
+              <span>{copied ? 'Copied to Clipboard' : 'Copy CSV'}</span>
+            </motion.button>
           </div>
 
-          <button
-            id="btn-close-source-feeds"
-            onClick={onClose}
-            className="p-1.5 rounded-lg bg-[#141418] border border-[#24242e] text-zinc-400 hover:text-white hover:bg-[#1e1e26] transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Tab Selection */}
-        <div className="px-6 py-2 bg-[#121217] border-b border-[#22222a] flex items-center justify-between text-xs font-mono">
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => setActiveTab('orders')}
-              className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
-                activeTab === 'orders'
-                  ? 'bg-zinc-800 text-white border border-zinc-700'
-                  : 'text-zinc-400 hover:text-zinc-200'
-              }`}
+          {/* CSV Preview Body */}
+          <div className="p-6 overflow-y-auto flex-1 font-mono text-xs" style={{ backgroundColor: 'var(--canvas)' }}>
+            <div 
+              className="rounded-lg border p-4 overflow-x-auto whitespace-pre leading-relaxed shadow-sm"
+              style={{ 
+                backgroundColor: 'var(--surface)', 
+                borderColor: 'var(--border)', 
+                color: 'var(--text-primary)',
+                fontFamily: 'var(--font-mono)' 
+              }}
             >
-              orders.csv ({feedsData.orders_count} rows)
-            </button>
-
-            <button
-              onClick={() => setActiveTab('settlements')}
-              className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
-                activeTab === 'settlements'
-                  ? 'bg-zinc-800 text-white border border-zinc-700'
-                  : 'text-zinc-400 hover:text-zinc-200'
-              }`}
-            >
-              settlements.csv ({feedsData.settlements_count} rows)
-            </button>
-
-            <button
-              onClick={() => setActiveTab('bank')}
-              className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
-                activeTab === 'bank'
-                  ? 'bg-zinc-800 text-white border border-zinc-700'
-                  : 'text-zinc-400 hover:text-zinc-200'
-              }`}
-            >
-              bank_statement.csv ({feedsData.bank_rows_count} rows)
-            </button>
+              {currentCsv}
+            </div>
+            <p className="text-[11px] mt-3 font-sans" style={{ color: 'var(--text-muted)' }}>
+              Deterministic data streaming pipeline. Converted to canonical records with 100% algebraic conservation.
+            </p>
           </div>
 
-          <button
-            onClick={handleCopy}
-            className="inline-flex items-center space-x-1.5 px-3 py-1 rounded bg-[#16161c] hover:bg-[#1e1e26] text-zinc-300 border border-[#24242e] transition-colors text-xs font-mono"
+          {/* Footer */}
+          <div 
+            className="p-3.5 px-6 border-t flex items-center justify-between text-xs"
+            style={{ backgroundColor: 'var(--surface-inset)', borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-zinc-400" />}
-            <span>{copied ? 'Copied' : 'Copy CSV'}</span>
-          </button>
-        </div>
-
-        {/* CSV Preview Body */}
-        <div className="p-6 overflow-y-auto flex-1 bg-[#0c0c0e]">
-          <div className="bg-[#111116] rounded-xl border border-[#222228] p-4 font-mono text-[11px] text-zinc-300 overflow-x-auto whitespace-pre leading-relaxed">
-            {currentCsv}
+            <div className="flex items-center space-x-2">
+              <Database className="w-3.5 h-3.5" style={{ color: 'var(--text-muted)' }} />
+              <span>Strict schema validation & idempotent entity mapping</span>
+            </div>
+            <motion.button
+              whileTap={{ scale: 0.96 }}
+              onClick={onClose}
+              className="px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors"
+              style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)', color: 'var(--text-primary)' }}
+            >
+              Close
+            </motion.button>
           </div>
-          <p className="text-[11px] text-zinc-500 mt-2.5 font-mono">
-            Canonical data streaming pipeline representation. 100% algebraic conservation guaranteed.
-          </p>
-        </div>
 
-        {/* Footer */}
-        <div className="p-3.5 px-6 border-t border-[#22222a] bg-[#0a0a0d] flex items-center justify-between text-xs text-zinc-400 font-mono">
-          <span>Feed Ingestion: Strict schema validation & atomic entity mapping</span>
-          <button
-            onClick={onClose}
-            className="px-3 py-1.5 rounded-lg bg-[#141418] hover:bg-[#1e1e26] text-zinc-200 text-xs font-medium border border-[#24242e] transition-colors"
-          >
-            Close
-          </button>
-        </div>
-
+        </motion.div>
       </div>
-    </div>
+    </AnimatePresence>
   );
 };
